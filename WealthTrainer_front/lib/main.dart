@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'company.dart';
 import 'stockprovider.dart';
+import 'dart:async';
 
 void main() {
   runApp(wealthtrainer());
 }
 
 class wealthtrainer extends StatelessWidget {
+  const wealthtrainer({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -78,31 +81,374 @@ class wealthtrainer extends StatelessWidget {
           ),
         ),
         initialRoute: '/',
-        routes: {'/': (context) => CompanyListPage(),
+        routes: {'/': (context) => SplashScreen(),
+                '/first': (context) => CompanyListPage(),
                 '/second': (context) => FirstResultsPage(),
-                '/third': (context) => CompanyListSecondPage(),
+                '/third': (context) => CompanyListSecondPage(companyData: [],),
                 '/fourth': (context) => SecondResultsPage(),
-                '/fifth': (context) => ResultsPage()
+                '/fifth': (context) => ResultsPage(),
+                '/sixth': (context) => RankingPage(),
         },
       ),
     );
   }
 }
 
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/start.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Wealth Trainer',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 0, 0, 0)),
+                ),
+              ),
+              Spacer(),
+              Center(
+                child: Text(
+                  '투자스쿨',
+                  style: TextStyle(
+                    fontSize: 60,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 0, 0, 0),
+                  ),
+                ),
+              ),
+              Spacer(),
+            ],
+          ),
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                '@Wealth Trainer 2024 All rights reserved',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _login() {
+    final id = _idController.text;
+    final password = _passwordController.text;
+
+    if (id == 'admin' && password == 'password') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EpisodeSelectionPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid ID or Password')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Wealth Trainer",
+          style: TextStyle(fontSize: 28),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(
+                controller: _idController,
+                decoration: InputDecoration(labelText: 'ID'),
+              ),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'PASSWORD'),
+              ),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 16),
+                child: ElevatedButton(
+                  onPressed: _login,
+                  child: Text('로그인'),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 16),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage()),
+                    );
+                  },
+                  child: Text(
+                    '회원가입',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Sign Up",
+          style: TextStyle(fontSize: 28),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: '이름'),
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: '아이디'),
+              ),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(labelText: '비밀번호'),
+              ),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(labelText: '비밀번호 확인'),
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: '닉네임'),
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: '소속'),
+              ),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 16),
+                child: ElevatedButton(
+                  onPressed: () {
+                  },
+                  child: Text('가입하기'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EpisodeSelectionPage extends StatelessWidget {
+  const EpisodeSelectionPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'episode',
+          style: TextStyle(fontSize: 28),
+        ),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: GridView.count(
+          crossAxisCount: 2,
+          padding: const EdgeInsets.all(16),
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          children: [
+            EpisodeCard(title: '주식', isLocked: false, onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => StockEpisodePage()),
+              );
+            }),
+            EpisodeCard(title: '부동산', isLocked: true),
+            EpisodeCard(title: '외화', isLocked: true),
+            EpisodeCard(title: '채권', isLocked: true),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EpisodeCard extends StatelessWidget {
+  final String title;
+  final bool isLocked;
+  final VoidCallback? onTap;
+
+  const EpisodeCard({
+    Key? key,
+    required this.title,
+    this.isLocked = false,
+    this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: isLocked ? null : onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 40), // 글자 크기 키움
+            ),
+            if (isLocked)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Icon(
+                  Icons.lock,
+                  color: Colors.yellow,
+                  size: 50,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StockEpisodePage extends StatelessWidget {
+  const StockEpisodePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Wealth Trainer'),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('1주차', style: Theme.of(context).textTheme.labelLarge),
+                Text('보유 금액: 100,000원', style: Theme.of(context).textTheme.labelLarge),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/news.jpg', // Corrected path
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/first');
+        },
+        label: Text('시작'),
+        icon: Icon(Icons.navigate_next),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+      ),
+    );
+  }
+}
+
 class CompanyListPage extends StatefulWidget {
+  //final List<ComData> companyData;
+
+  //CompanyListPage({required this.companyData});
+
   @override
   State<StatefulWidget> createState() {
     return _CompanyListPageState();
   }
 }
 class _CompanyListPageState extends State<CompanyListPage> {
-  final List<ComData> companyData = [
-    ComData(companyName: 'Company A', price: 100, previousPrice: 150, description: 'Company A는 ...'),
-    ComData(companyName: 'Company B', price: 150, previousPrice: 120, description: 'Company B는 ...'),
-    ComData(companyName: 'Company C', price: 80, previousPrice: 100, description: 'Company C는 ...'),
-    ComData(companyName: 'Company D', price: 120, previousPrice: 80, description: 'Company D는 ...'),
+    final List<ComData> companyData = [
+    ComData(companyName: 'Company A', price: 100, changePrice: 150, percentChange: 5, description: 'Company A는 ...'),
+    ComData(companyName: 'Company B', price: 150, changePrice: 120, percentChange: 5, description: 'Company B는 ...'),
+    ComData(companyName: 'Company C', price: 80, changePrice: 100, percentChange: 5, description: 'Company C는 ...'),
+    ComData(companyName: 'Company D', price: 120, changePrice: 80, percentChange: 5, description: 'Company D는 ...'),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,9 +491,9 @@ class _CompanyListPageState extends State<CompanyListPage> {
                           style: Theme.of(context).textTheme.bodyLarge
                           ),
                         TextSpan(
-                          text: '${data.change > 0 ? '+' : ''}${data.change.toStringAsFixed(2)} (${data.changePercentage.toStringAsFixed(2)}%)',
+                          text: '${data.percentChange > 0 ? '+' : ''}${data.changePrice.toStringAsFixed(2)} (${data.percentChange.toStringAsFixed(2)}%)',
                           style: TextStyle(
-                            color: data.change >= 0 ? Colors.red : Colors.blue,
+                            color: data.percentChange >= 0 ? Colors.red : Colors.blue,
                             fontFamily: 'Sunflower',
                             fontWeight: FontWeight.bold,
                           ),
@@ -369,19 +715,16 @@ class FirstResultsPage extends StatelessWidget{
 }
 
 class CompanyListSecondPage extends StatefulWidget{
+  final List<ComData> companyData;
+
+  CompanyListSecondPage({required this.companyData});
+
   @override
   State<StatefulWidget> createState() {
     return _CompanyListSecondPage();
   }
 }
 class _CompanyListSecondPage extends State<CompanyListSecondPage> {
-  final List<ComData> companyData = [
-    ComData(companyName: 'Company A', price: 100, previousPrice: 80, description: 'Company A는 ...'),
-    ComData(companyName: 'Company B', price: 150, previousPrice: 190, description: 'Company B는 ...'),
-    ComData(companyName: 'Company C', price: 80, previousPrice: 200, description: 'Company C는 ...'),
-    ComData(companyName: 'Company D', price: 120, previousPrice: 70, description: 'Company D는 ...'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -402,9 +745,9 @@ class _CompanyListSecondPage extends State<CompanyListSecondPage> {
         ),
       ),
       body: ListView.builder(
-          itemCount: companyData.length,
+          itemCount: widget.companyData.length,
           itemBuilder: (context, index) {
-            final data = companyData[index];
+            final data = widget.companyData[index];
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: ListTile(
@@ -424,9 +767,9 @@ class _CompanyListSecondPage extends State<CompanyListSecondPage> {
                           style: Theme.of(context).textTheme.bodyLarge
                           ),
                         TextSpan(
-                          text: '${data.change > 0 ? '+' : ''}${data.change.toStringAsFixed(2)} (${data.changePercentage.toStringAsFixed(2)}%)',
+                          text: '${data.changePrice > 0 ? '+' : ''}${data.changePrice.toStringAsFixed(2)} (${data.percentChange.toStringAsFixed(2)}%)',
                           style: TextStyle(
-                            color: data.change >= 0 ? Colors.red : Colors.blue,
+                            color: data.changePrice >= 0 ? Colors.red : Colors.blue,
                             fontFamily: 'Sunflower',
                             fontWeight: FontWeight.bold,
                           ),
@@ -436,7 +779,7 @@ class _CompanyListSecondPage extends State<CompanyListSecondPage> {
                   ),
                   ],
                 ),
-                onTap: () => _showCompanyDetailsSecond(context, companyData[index]),
+                onTap: () => _showCompanyDetailsSecond(context, widget.companyData[index]),
               ),
             );
           },
@@ -849,9 +1192,99 @@ class ResultsPage extends StatelessWidget {
                   rows: profitRowsWithTotal,
                 ),
               ),
+              SizedBox(height: 60,),
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.of(context).pushNamed('/sixth');
+        },
+        label: Text('최종 랭킹'),
+        icon: Icon(Icons.navigate_next),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+      ),
+    );
+  }
+}
+
+class RankingPage extends StatelessWidget {
+  const RankingPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('RANKING'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildRankingItem(context, 1, 'John Doe', 10000, Colors.yellow),
+              _buildRankingItem(context, 2, 'Jane Smith', 9000, Colors.grey),
+              _buildRankingItem(context, 3, 'Alice Johnson', 8000, Colors.orange),
+              _buildRankingItem(context, 4, 'Bob Brown', 7000, Colors.blue),
+              _buildRankingItem(context, 5, 'Charlie Davis', 6000, Colors.blue),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Logic for navigating to the next page
+        },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Icon(Icons.arrow_forward),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget _buildRankingItem(BuildContext context, int rank, String name, int amount, Color color) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 30), // Space for the circle
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            color: Color.fromARGB(255, 134, 176, 222),
+            width: MediaQuery.of(context).size.width - 92, // Adjusted width to account for the shift
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(name, style: TextStyle(fontSize: 20, color: Colors.black)),
+                Container(
+                  color: Color.fromARGB(255, 134, 176, 222),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('최종 돈', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      Text(amount.toString(), style: TextStyle(fontSize: 16, color: Colors.black)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: color,
+              child: Text(rank.toString(), style: TextStyle(color: Colors.black)),
+            ),
+          ),
+        ],
       ),
     );
   }
