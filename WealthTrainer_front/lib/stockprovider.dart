@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'company.dart';
 
 class StockProvider with ChangeNotifier {
   int _quantity = 0;
-  double _pricePerUnit = 100.0;
+  final ComData comData;
+
+  StockProvider({required this.comData});
 
   int get quantity => _quantity;
-  double get totalPrice => _quantity * _pricePerUnit;
+  double get pricePerUnit => comData.price;
+  double get totalPrice => _quantity * pricePerUnit;
 
   void incrementQuantity() {
     _quantity++;
@@ -27,8 +31,8 @@ class StockProvider with ChangeNotifier {
   }
 
   Future<void> purchase() async {
-    // 예제 URL, 헤더, 바디 설정
     final url = 'https://example.com/api/purchase';
+    //구매량 값 보낼 경로
     
     try {
       final response = await http.post(
