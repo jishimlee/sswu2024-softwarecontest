@@ -3,18 +3,27 @@ import 'package:provider/provider.dart';
 import 'company.dart';
 import 'stockprovider.dart';
 import 'dart:async';
+import 'api.dart';
 
 void main() {
   runApp(wealthtrainer());
 }
 
 class wealthtrainer extends StatelessWidget {
-  const wealthtrainer({Key? key}) : super(key: key);
+  //const wealthtrainer({Key? key}) : super(key: key);
+
+  final comData = ComData(
+    companyName: 'Company A',
+    price: 100.0,
+    changePrice: 5.0,
+    percentChange: 5.0,
+    description: 'A description',
+  );
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => StockProvider(),
+      create: (context) => StockProvider(comData: comData),
       child: MaterialApp(
         title: 'Wealth Trainer',
         theme: ThemeData(
@@ -82,7 +91,7 @@ class wealthtrainer extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {'/': (context) => SplashScreen(),
-                '/first': (context) => CompanyListPage(),
+                '/first': (context) => CompanyListPage(companyData: [],),
                 '/second': (context) => FirstResultsPage(),
                 '/third': (context) => CompanyListSecondPage(companyData: [],),
                 '/fourth': (context) => SecondResultsPage(),
@@ -433,9 +442,9 @@ class StockEpisodePage extends StatelessWidget {
 }
 
 class CompanyListPage extends StatefulWidget {
-  //final List<ComData> companyData;
+  final List<ComData> companyData;
 
-  //CompanyListPage({required this.companyData});
+  CompanyListPage({required this.companyData});
 
   @override
   State<StatefulWidget> createState() {
@@ -532,7 +541,6 @@ class _CompanyListPageState extends State<CompanyListPage> {
             children: [
               Text(data.description),
               SizedBox(height: 20),
-              //회사 로고 등 추가 가능
               Center(
                 child: ElevatedButton(
                   onPressed: () => _showPurchaseDialog(context),
