@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'company.dart';
-import 'stockprovider.dart';
+import 'package:wealthtrainer/config/mySqlConnector.dart';
+import 'package:wealthtrainer/loginPage/loginMainPage.dart';
+import 'stock/company.dart';
+import 'stock/stockprovider.dart';
 import 'dart:async';
-import 'api.dart';
+import 'stock/api.dart';
 
 void main() {
+  dbConnector();
   runApp(wealthtrainer());
 }
 
 class wealthtrainer extends StatelessWidget {
-  //const wealthtrainer({Key? key}) : super(key: key);
-
-  final comData = ComData(
-    companyName: 'Company A',
-    price: 100.0,
-    changePrice: 5.0,
-    percentChange: 5.0,
-    description: 'A description',
-  );
+  const wealthtrainer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => StockProvider(comData: comData),
+      create: (context) => StockProvider(),
       child: MaterialApp(
         title: 'Wealth Trainer',
         theme: ThemeData(
@@ -170,144 +165,144 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+// class LoginPage extends StatefulWidget {
+//   const LoginPage({Key? key}) : super(key: key);
 
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+//   @override
+//   _LoginPageState createState() => _LoginPageState();
+// }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _idController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+// class _LoginPageState extends State<LoginPage> {
+//   final TextEditingController _idController = TextEditingController();
+//   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
-    final id = _idController.text;
-    final password = _passwordController.text;
+//   void _login() {
+//     final id = _idController.text;
+//     final password = _passwordController.text;
 
-    if (id == 'admin' && password == 'password') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => EpisodeSelectionPage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invalid ID or Password')),
-      );
-    }
-  }
+//     if (id == 'admin' && password == 'password') {
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(builder: (context) => EpisodeSelectionPage()),
+//       );
+//     } else {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Invalid ID or Password')),
+//       );
+//     }
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Wealth Trainer",
-          style: TextStyle(fontSize: 28),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              TextField(
-                controller: _idController,
-                decoration: InputDecoration(labelText: 'ID'),
-              ),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: 'PASSWORD'),
-              ),
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 16),
-                child: ElevatedButton(
-                  onPressed: _login,
-                  child: Text('로그인'),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 16),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
-                  },
-                  child: Text(
-                    '회원가입',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text(
+//           "Wealth Trainer",
+//           style: TextStyle(fontSize: 28),
+//         ),
+//       ),
+//       body: SingleChildScrollView(
+//         child: Padding(
+//           padding: const EdgeInsets.all(16),
+//           child: Column(
+//             children: [
+//               TextField(
+//                 controller: _idController,
+//                 decoration: InputDecoration(labelText: 'ID'),
+//               ),
+//               TextField(
+//                 controller: _passwordController,
+//                 obscureText: true,
+//                 decoration: InputDecoration(labelText: 'PASSWORD'),
+//               ),
+//               Container(
+//                 width: double.infinity,
+//                 margin: const EdgeInsets.only(top: 16),
+//                 child: ElevatedButton(
+//                   onPressed: _login,
+//                   child: Text('로그인'),
+//                 ),
+//               ),
+//               Container(
+//                 width: double.infinity,
+//                 margin: const EdgeInsets.only(top: 16),
+//                 child: GestureDetector(
+//                   onTap: () {
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(builder: (context) => SignUpPage()),
+//                     );
+//                   },
+//                   child: Text(
+//                     '회원가입',
+//                     style: TextStyle(
+//                       color: Colors.blue,
+//                       decoration: TextDecoration.underline,
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-class SignUpPage extends StatelessWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+// class SignUpPage extends StatelessWidget {
+//   const SignUpPage({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Sign Up",
-          style: TextStyle(fontSize: 28),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              TextField(
-                decoration: InputDecoration(labelText: '이름'),
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: '아이디'),
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(labelText: '비밀번호'),
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(labelText: '비밀번호 확인'),
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: '닉네임'),
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: '소속'),
-              ),
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 16),
-                child: ElevatedButton(
-                  onPressed: () {
-                  },
-                  child: Text('가입하기'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text(
+//           "Sign Up",
+//           style: TextStyle(fontSize: 28),
+//         ),
+//       ),
+//       body: SingleChildScrollView(
+//         child: Padding(
+//           padding: const EdgeInsets.all(16),
+//           child: Column(
+//             children: [
+//               TextField(
+//                 decoration: InputDecoration(labelText: '이름'),
+//               ),
+//               TextField(
+//                 decoration: InputDecoration(labelText: '아이디'),
+//               ),
+//               TextField(
+//                 obscureText: true,
+//                 decoration: InputDecoration(labelText: '비밀번호'),
+//               ),
+//               TextField(
+//                 obscureText: true,
+//                 decoration: InputDecoration(labelText: '비밀번호 확인'),
+//               ),
+//               TextField(
+//                 decoration: InputDecoration(labelText: '닉네임'),
+//               ),
+//               TextField(
+//                 decoration: InputDecoration(labelText: '소속'),
+//               ),
+//               Container(
+//                 width: double.infinity,
+//                 margin: const EdgeInsets.only(top: 16),
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                   },
+//                   child: Text('가입하기'),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class EpisodeSelectionPage extends StatelessWidget {
   const EpisodeSelectionPage({Key? key}) : super(key: key);
@@ -452,12 +447,14 @@ class CompanyListPage extends StatefulWidget {
   }
 }
 class _CompanyListPageState extends State<CompanyListPage> {
-    final List<ComData> companyData = [
-    ComData(companyName: 'Company A', price: 100, changePrice: 150, percentChange: 5, description: 'Company A는 ...'),
-    ComData(companyName: 'Company B', price: 150, changePrice: 120, percentChange: 5, description: 'Company B는 ...'),
-    ComData(companyName: 'Company C', price: 80, changePrice: 100, percentChange: 5, description: 'Company C는 ...'),
-    ComData(companyName: 'Company D', price: 120, changePrice: 80, percentChange: 5, description: 'Company D는 ...'),
-  ];
+  late Future<List<ComData>> _companyDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _companyDataFuture = DataService().fetchStockData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -477,43 +474,58 @@ class _CompanyListPageState extends State<CompanyListPage> {
           ),
         ),
       ),
-      body: ListView.builder(
-        itemCount: companyData.length,
-        itemBuilder: (context, index) {
-          final data = companyData[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: ListTile(
-              contentPadding: EdgeInsets.all(16.0),
-              title: Text(
-                data.companyName, 
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('1주당 가격: ${data.price}', style: Theme.of(context).textTheme.bodyLarge),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '전날 대비 가격 변동: ',
-                          style: Theme.of(context).textTheme.bodyLarge
-                          ),
-                        TextSpan(
-                          text: '${data.percentChange > 0 ? '+' : ''}${data.changePrice.toStringAsFixed(2)} (${data.percentChange.toStringAsFixed(2)}%)',
-                          style: TextStyle(
-                            color: data.percentChange >= 0 ? Colors.red : Colors.blue,
-                            fontFamily: 'Sunflower',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+      body: FutureBuilder<List<ComData>>(
+        future: _companyDataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('오류 발생: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('데이터가 없습니다')); // 데이터가 없을 때
+          }
+
+          final companyData = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: companyData.length,
+            itemBuilder: (context, index) {
+              final data = companyData[index];
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16.0),
+                  title: Text(
+                    data.companyName, 
                   ),
-                ],
-              ),
-              onTap: () => _showCompanyDetails(context, data),
-            ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('1주당 가격: ${data.price}', style: Theme.of(context).textTheme.bodyLarge),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '전날 대비 가격 변동: ',
+                              style: Theme.of(context).textTheme.bodyLarge
+                              ),
+                            TextSpan(
+                              text: '${data.percentChange > 0 ? '+' : ''}${data.changePrice.toStringAsFixed(2)} (${data.percentChange.toStringAsFixed(2)}%)',
+                              style: TextStyle(
+                                color: data.percentChange >= 0 ? Colors.red : Colors.blue,
+                                fontFamily: 'Sunflower',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () => _showCompanyDetails(context, data),
+                ),
+              );
+            },
           );
         },
       ),
@@ -597,7 +609,7 @@ class StockPurchaseDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             try {
-              await stockProvider.purchase();
+              // await stockProvider.purchase();
               Navigator.of(context).pop(); // 다이얼로그 닫기
             } catch (error) {
               // 오류 메시지 표시
@@ -733,6 +745,14 @@ class CompanyListSecondPage extends StatefulWidget{
   }
 }
 class _CompanyListSecondPage extends State<CompanyListSecondPage> {
+  late Future<List<ComData>> _stock;
+
+  @override
+  void initState() {
+    super.initState();
+    _stock = DataService().fetchStockData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -752,47 +772,62 @@ class _CompanyListSecondPage extends State<CompanyListSecondPage> {
           ),
         ),
       ),
-      body: ListView.builder(
-          itemCount: widget.companyData.length,
-          itemBuilder: (context, index) {
-            final data = widget.companyData[index];
-            return Card(
-              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: ListTile(
-                contentPadding: EdgeInsets.all(16.0),
-                title: Text(
-                  data.companyName,
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('1주당 가격: ${data.price}', style: Theme.of(context).textTheme.bodyLarge),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '전날 대비 가격 변동: ',
-                          style: Theme.of(context).textTheme.bodyLarge
-                          ),
-                        TextSpan(
-                          text: '${data.changePrice > 0 ? '+' : ''}${data.changePrice.toStringAsFixed(2)} (${data.percentChange.toStringAsFixed(2)}%)',
-                          style: TextStyle(
-                            color: data.changePrice >= 0 ? Colors.red : Colors.blue,
-                            fontFamily: 'Sunflower',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+      body: FutureBuilder<List<ComData>>(
+        future: _stock,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('오류 발생: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('데이터가 없습니다')); // 데이터가 없을 때
+          }
+
+          // final companyData = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: widget.companyData.length,
+            itemBuilder: (context, index) {
+              final data = widget.companyData[index];
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16.0),
+                  title: Text(
+                    data.companyName,
                   ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('1주당 가격: ${data.price}', style: Theme.of(context).textTheme.bodyLarge),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '전날 대비 가격 변동: ',
+                              style: Theme.of(context).textTheme.bodyLarge
+                            ),
+                          TextSpan(
+                            text: '${data.changePrice > 0 ? '+' : ''}${data.changePrice.toStringAsFixed(2)} (${data.percentChange.toStringAsFixed(2)}%)',
+                            style: TextStyle(
+                              color: data.changePrice >= 0 ? Colors.red : Colors.blue,
+                              fontFamily: 'Sunflower',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 onTap: () => _showCompanyDetailsSecond(context, widget.companyData[index]),
               ),
             );
           },
-        ),
-        floatingActionButton: FloatingActionButton.extended(
+        );
+      },
+    ),
+    floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.of(context).pushNamed('/fourth');
           },
@@ -871,7 +906,7 @@ class StockPurchaseDialogSecond extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             try {
-              await stockProvider.purchase();
+              // await stockProvider.purchase();
               Navigator.of(context).pop(); // 다이얼로그 닫기
             } catch (error) {
               // 오류 메시지 표시
