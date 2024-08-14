@@ -1,40 +1,33 @@
-import 'package:sqflite/sqflite.dart';
+import 'package:mysql_client/mysql_client.dart';
 import 'company.dart';
-import 'data.dart';
+import '../config/mySqlConnector.dart';
 
-class DataService {
-  final DatabaseHelper _dbHelper = DatabaseHelper();
-
-  Future<List<ComData>> fetchStockData() async {
-    final db = await _dbHelper.database;
-
-    try {
-      final List<Map<String, dynamic>> maps = await db.query('Stock');
-      
-
-      return List.generate(maps.length, (i) {
-        return ComData(
-          stockId: maps[i]['stock_id'] as int,
-          companyName: maps[i]['company'] as String,
-          price: maps[i]['per_price'] as int,
-          changePrice: maps[i]['amount_change'] as int,
-          percentChange: maps[i]['rate_change'] as int,
-          description: maps[i]['company_explanation'] as String,
-        );
-      });
-    } catch (e) {
-      print('Error fetching stock data: $e');
-      throw Exception('Failed to load stock data');
-    }
+Future<List<ComData>> fetchStockData() async {
+  final conn = await dbConnector();
+  if (conn == null) {
+    throw Exception("데이터베이스 연결 실패");
   }
 
-  Future<void> insertStock(ComData comData) async {
-    final db = await _dbHelper.database;
-
-    await db.insert(
-      'Stock',
-      comData.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  try {
+    final results = await conn.execute('SELECT * FROM stock'); // 적절한 쿼리 사용
+    List<ComData> companies = [];
+    for (final row in results.rows) {
+      companies.add(
+        ComData(
+          stockId: row.colByName('stock_id') as int,
+          companyName: row.colByName('company') as String,
+          price: row.colByName('per_price') as int,
+          changePrice: row.colByName('amount_change') as int,
+          percentChange: row.colByName('rate_change') as int,
+          description: row.colByName('company_explanation') as String,
+        ),
+      );
+    }
+    return companies;
+  } catch (e) {
+    print('Error fetching company data: $e');
+    return [];
+  } finally {
+    await conn.close();
   }
 }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wealthtrainer/config/mySqlConnector.dart';
 import 'package:wealthtrainer/loginPage/loginMainPage.dart';
+import 'package:wealthtrainer/stock/api.dart';
 import 'stock/company.dart';
 import 'stock/stockprovider.dart';
 import 'dart:async';
-import 'stock/api.dart';
 
 void main() {
   dbConnector();
@@ -452,7 +452,7 @@ class _CompanyListPageState extends State<CompanyListPage> {
   @override
   void initState() {
     super.initState();
-    _companyDataFuture = DataService().fetchStockData();
+    _companyDataFuture = fetchStockData();
   }
 
   @override
@@ -750,7 +750,6 @@ class _CompanyListSecondPage extends State<CompanyListSecondPage> {
   @override
   void initState() {
     super.initState();
-    _stock = DataService().fetchStockData();
   }
 
   @override

@@ -10,7 +10,7 @@ class MemberRegisterPage extends StatefulWidget {
 }
 
 class _MemberRegisterState extends State<MemberRegisterPage> {
-    final TextEditingController nameController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController userIdController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();

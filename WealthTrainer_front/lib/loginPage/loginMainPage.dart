@@ -78,6 +78,18 @@ class _LoginState extends State<LoginPage> {
     await prefs.remove('token');
   }
 
+  void _login() {
+    final id = userIdController.text;
+    final password = passwordController.text;
+
+    if (id == 'admin' && password == 'password') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EpisodeSelectionPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,9 +157,9 @@ class _LoginState extends State<LoginPage> {
                       userIdController.text,
                       passwordController.text,
                     );
-                    print(loginCheck);
+                    print('로그인 체크 결과: $loginCheck');
 
-                    if (loginCheck == '-1') {
+                    if (loginCheck == '0') {
                       print('로그인 실패');
                       showDialog(
                         context: context,
