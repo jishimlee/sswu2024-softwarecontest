@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'company.dart';
+import '../new/company.dart';
 
 class StockProvider with ChangeNotifier {
   int _quantity = 0;
@@ -10,7 +10,7 @@ class StockProvider with ChangeNotifier {
   }
 
   int get quantity => _quantity;
-  int get pricePerUnit => comData?.price ?? 0;
+  int get pricePerUnit => comData?.per_price ?? 0;
   int get totalPrice => _quantity * pricePerUnit;
 
   void incrementQuantity() {
